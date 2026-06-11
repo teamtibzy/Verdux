@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { waitlistSchema, type WaitlistValues } from "@/lib/waitlist";
 import { trackEvent } from "@/lib/analytics";
+import { waitlistSchema, type WaitlistValues } from "@/lib/waitlist";
 
 export function WaitlistForm() {
   const [success, setSuccess] = useState(false);
@@ -45,25 +45,28 @@ export function WaitlistForm() {
   }
 
   const fieldClass =
-    "min-h-12 w-full rounded-full border border-line bg-white px-4 text-sm text-verdant-950 shadow-sm transition placeholder:text-neutral-500 focus:border-verdant-400";
+    "min-h-[70px] w-full rounded-[18px] border border-line bg-white px-5 text-sm text-verdant-950 shadow-sm transition placeholder:text-neutral-500 focus:border-verdant-400";
 
   return (
-    <div id="waitlist-form" className="scroll-mt-24 rounded-[24px] bg-white p-5 shadow-premium sm:p-8">
+    <div
+      id="waitlist-form"
+      className="scroll-mt-24 bg-white p-6 shadow-premium sm:p-10 lg:p-[46px]"
+    >
       <AnimatePresence mode="wait">
         {success ? (
           <motion.div
             animate={{ opacity: 1, scale: 1 }}
-            className="flex min-h-[420px] flex-col items-center justify-center text-center"
+            className="flex min-h-[520px] flex-col items-center justify-center text-center"
             initial={{ opacity: 0, scale: 0.96 }}
             key="success"
             transition={{ duration: 0.4 }}
           >
             <motion.div
               animate={{ scale: [0.9, 1.08, 1] }}
-              className="mb-6 grid h-16 w-16 place-items-center rounded-full bg-verdant-300 text-3xl text-verdant-950"
+              className="mb-6 grid h-16 w-16 place-items-center rounded-full bg-verdant-300 text-base font-semibold text-verdant-950"
               transition={{ duration: 0.55 }}
             >
-              ✓
+              OK
             </motion.div>
             <h2 className="font-serif text-3xl font-semibold text-verdant-700">
               You're officially on the VERDUX waitlist.
@@ -76,62 +79,100 @@ export function WaitlistForm() {
         ) : (
           <motion.form
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-5"
+            className="space-y-[22px]"
             initial={{ opacity: 0, y: 16 }}
             key="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-verdant-800">
-                Join the waitlist
-              </p>
-              <h2 className="mt-3 font-serif text-3xl font-semibold leading-tight text-verdant-700 sm:text-4xl">
-                Get founding-member access first.
-              </h2>
-            </div>
+            <Field
+              error={errors.email?.message}
+              label="Email Address"
+              input={
+                <input
+                  className={fieldClass}
+                  placeholder="you@example.com"
+                  type="email"
+                  {...register("email")}
+                />
+              }
+            />
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
                 error={errors.firstName?.message}
                 label="First Name"
-                input={<input className={fieldClass} {...register("firstName")} />}
+                input={
+                  <input
+                    className={fieldClass}
+                    placeholder="First name"
+                    {...register("firstName")}
+                  />
+                }
               />
               <Field
                 error={errors.lastName?.message}
                 label="Last Name"
-                input={<input className={fieldClass} {...register("lastName")} />}
+                input={
+                  <input
+                    className={fieldClass}
+                    placeholder="Last name"
+                    {...register("lastName")}
+                  />
+                }
               />
             </div>
             <Field
-              error={errors.email?.message}
-              label="Email Address"
-              input={<input className={fieldClass} type="email" {...register("email")} />}
+              error={errors.company?.message}
+              label="What best describes you?"
+              optional
+              input={
+                <select className={fieldClass} {...register("company")}>
+                  <option value="">Select one</option>
+                  <option value="Founder">Founder</option>
+                  <option value="Remote worker">Remote worker</option>
+                  <option value="Creative professional">Creative professional</option>
+                  <option value="Startup team">Startup team</option>
+                  <option value="Service business">Service business</option>
+                </select>
+              }
             />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                error={errors.phone?.message}
-                label="Phone Number"
-                optional
-                input={<input className={fieldClass} type="tel" {...register("phone")} />}
+            <Field
+              error={errors.phone?.message}
+              label="Phone Number"
+              optional
+              input={
+                <input
+                  className={fieldClass}
+                  placeholder="+234"
+                  type="tel"
+                  {...register("phone")}
+                />
+              }
+            />
+            <label className="block">
+              <span className="mb-2 flex items-center justify-between text-sm font-semibold text-verdant-950">
+                What are you hoping VERDUX helps with?
+                <span className="text-xs font-normal text-neutral-500">Optional</span>
+              </span>
+              <textarea
+                className="min-h-[154px] w-full resize-none rounded-[18px] border border-line bg-white px-5 py-4 text-sm text-verdant-950 shadow-sm transition placeholder:text-neutral-500 focus:border-verdant-400"
+                placeholder="Tell us a little about your work setup."
               />
-              <Field
-                error={errors.company?.message}
-                label="Company Name"
-                optional
-                input={<input className={fieldClass} {...register("company")} />}
-              />
-            </div>
+            </label>
             {formError ? (
               <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
                 {formError}
               </p>
             ) : null}
             <button
-              className="min-h-12 w-full rounded-full bg-verdant-700 px-6 text-sm font-semibold text-white transition duration-300 ease-out hover:scale-[1.03] hover:bg-verdant-400 disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-[69px] w-full rounded-full bg-verdant-700 px-6 text-base font-semibold text-white transition duration-300 ease-out hover:scale-[1.03] hover:bg-verdant-400 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Joining..." : "Reserve Spot"}
+              {isSubmitting ? "Joining..." : "Join the Waitlist"}
             </button>
+            <p className="text-center text-xs text-neutral-500">
+              No spam. Just progress updates and launch news.
+            </p>
           </motion.form>
         )}
       </AnimatePresence>
